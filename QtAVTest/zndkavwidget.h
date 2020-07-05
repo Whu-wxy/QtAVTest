@@ -12,8 +12,10 @@
 #include <QtGlobal>
 
 #include <QtAV/VideoFrame.h>
-//#include <QtAVWidgets>
 #include "WidgetRenderer.h"
+
+
+#include <QtAVWidgets>
 using namespace QtAV;
 
 class ZNDKAVWidget : public WidgetRenderer

@@ -16,7 +16,7 @@ ZNDKAVWidget::ZNDKAVWidget(QWidget *parent, Qt::WindowFlags f)
     m_rotateY = 0;
     m_rotateZ = 0;
 
-    m_gridRatio = 8;
+    m_gridRatio = 2;
     m_dCamFocus = 1; //没有用到
     m_verticalAngle = 90;
     m_nearPlane = 0.1;
@@ -86,7 +86,7 @@ bool ZNDKAVWidget::prepareGrid()
     float maxZVal = m_maxDis/cos(m_rotateX*M_PI/180);
 
     //变换矩阵
-    m_matrix.translate(this->width()/2, this->height(), 0);
+   // m_matrix.translate(this->width()/2, this->height(), 0);
     m_matrix.rotate(-m_rotateX, 1, 0, 0);
     m_matrix.rotate(m_rotateY, 0, 1, 0);
     m_matrix.rotate(m_rotateZ, 0, 0, 1);
@@ -207,39 +207,39 @@ void ZNDKAVWidget::paintGridBox(QPainter* painter)
     painter->drawText(QPoint(0, this->height()/2), QString::number(m_maxDis));
     painter->drawText(QPoint(0, this->height()), QString::number(m_minDis));
 
-    painter->translate(this->width()/2-m_ptMiddle.x(), this->height()/2-m_ptMiddle.y());
+    painter->translate(this->width()/2, this->height()/2);
     for(float i=m_maxDis; i>=0; i-=m_dStep)
     {
         float zVal = maxZVal-(m_maxDis-i)*cos(m_rotateX*M_PI/180);
 
-        QVector3D pH1(-m_gridRatio*(m_maxDis-0)/2, i, zVal);
+        QVector3D pH1(-m_maxDis, i, zVal);
         QPointF ph1 = m_matrix.map(pH1).toPointF();
-        QVector3D pH2(m_gridRatio*(m_maxDis-0)/2, i, zVal);
+        QVector3D pH2(m_maxDis, i, zVal);
         QPointF ph2 = m_matrix.map(pH2).toPointF();
 
         // H line
-        painter->drawLine(QPoint(m_ptMiddle.x()+(ph1.x()-m_ptMiddle.x())*m_scaleFactor, m_ptMiddle.y()+(ph1.y()-m_ptMiddle.y())*m_scaleFactor),
-                          QPoint(m_ptMiddle.x()+(ph2.x()-m_ptMiddle.x())*m_scaleFactor, m_ptMiddle.y()+(ph2.y()-m_ptMiddle.y())*m_scaleFactor));
+        painter->drawLine(QPoint((ph1.x()-m_ptMiddle.x())*m_scaleFactor, (ph1.y()-m_ptMiddle.y())*m_scaleFactor),
+                          QPoint((ph2.x()-m_ptMiddle.x())*m_scaleFactor, (ph2.y()-m_ptMiddle.y())*m_scaleFactor));
     }
-    for(float i=0; i<=m_maxDis; i+=m_dStep)
+    for(float i=0; i<=m_maxDis*m_gridRatio; i+=m_dStep)
     {
         //左竖线
-        QVector3D pV1(m_gridRatio*i/2, m_maxDis, maxZVal);
+        QVector3D pV1(i, m_maxDis, maxZVal);
         QPointF pv1 = m_matrix.map(pV1).toPointF();
-        QVector3D pV2(m_gridRatio*i/2, 0, minZVal);
+        QVector3D pV2(i, 0, minZVal);
         QPointF pv2 = m_matrix.map(pV2).toPointF();
 
         //右竖线
-        QVector3D pV3(-m_gridRatio*i/2, m_maxDis, maxZVal);
+        QVector3D pV3(-i, m_maxDis, maxZVal);
         QPointF pv3 = m_matrix.map(pV3).toPointF();
-        QVector3D pV4(-m_gridRatio*i/2, 0, minZVal);
+        QVector3D pV4(-i, 0, minZVal);
         QPointF pv4 = m_matrix.map(pV4).toPointF();
 
         // V line
-        painter->drawLine(QPoint(m_ptMiddle.x()+(pv1.x()-m_ptMiddle.x())*m_scaleFactor, m_ptMiddle.y()+(pv1.y()-m_ptMiddle.y())*m_scaleFactor),
-                          QPoint(m_ptMiddle.x()+(pv2.x()-m_ptMiddle.x())*m_scaleFactor, m_ptMiddle.y()+(pv2.y()-m_ptMiddle.y())*m_scaleFactor));
-        painter->drawLine(QPoint(m_ptMiddle.x()+(pv3.x()-m_ptMiddle.x())*m_scaleFactor, m_ptMiddle.y()+(pv3.y()-m_ptMiddle.y())*m_scaleFactor),
-                          QPoint(m_ptMiddle.x()+(pv4.x()-m_ptMiddle.x())*m_scaleFactor, m_ptMiddle.y()+(pv4.y()-m_ptMiddle.y())*m_scaleFactor));
+        painter->drawLine(QPoint((pv1.x()-m_ptMiddle.x())*m_scaleFactor, (pv1.y()-m_ptMiddle.y())*m_scaleFactor),
+                          QPoint((pv2.x()-m_ptMiddle.x())*m_scaleFactor, (pv2.y()-m_ptMiddle.y())*m_scaleFactor));
+        painter->drawLine(QPoint((pv3.x()-m_ptMiddle.x())*m_scaleFactor, (pv3.y()-m_ptMiddle.y())*m_scaleFactor),
+                          QPoint((pv4.x()-m_ptMiddle.x())*m_scaleFactor, (pv4.y()-m_ptMiddle.y())*m_scaleFactor));
     }
 
   //  painter->end();
